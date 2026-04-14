@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+  <title>Claude Chat Viewer</title>
+  <link rel="icon" type="image/png" href="../assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 커스텀 타이틀바 -->
+  <div id="titlebar">
+    <div class="titlebar-drag">
+      <div class="titlebar-icon">
+        <img src="../assets/icon.png" alt="Logo" width="16" height="16">
+      </div>
+      <div class="titlebar-title">Claude Chat Viewer</div>
+    </div>
+    <div class="titlebar-controls">
+      <button id="titlebar-minimize" class="titlebar-btn" title="최소화">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <rect x="1" y="5.5" width="10" height="1" fill="currentColor"/>
+        </svg>
+      </button>
+      <button id="titlebar-maximize" class="titlebar-btn" title="최대화">
+        <svg width="12" height="12" viewBox="0 0 12 12" id="maximize-icon">
+          <rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        <svg width="12" height="12" viewBox="0 0 12 12" id="restore-icon" style="display: none;">
+          <rect x="3" y="0.5" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1"/>
+          <rect x="0.5" y="3" width="8" height="8" fill="var(--bg-primary)" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </button>
+      <button id="titlebar-close" class="titlebar-btn close-btn" title="닫기">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="app">
+    <!-- 사이드바 -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="../assets/icon.png" alt="Logo" width="28" height="28" style="border-radius: 6px;">
+          <span>Chat Viewer</span>
+        </div>
+        <div class="header-buttons">
+          <button id="ai-btn" class="icon-btn" title="AI 자동 분류">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"/>
+              <circle cx="7.5" cy="14.5" r="1.5"/>
+              <circle cx="16.5" cy="14.5" r="1.5"/>
+            </svg>
+          </button>
+          <button id="manage-btn" class="icon-btn" title="카테고리/태그 관리">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3v18M3 12h18"/>
+            </svg>
+          </button>
+          <button id="load-btn" class="icon-btn" title="파일 불러오기">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="대화 검색..." />
+        <button id="clear-search" class="clear-btn" style="display: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 필터 영역 -->
+      <div class="filter-section">
+        <div class="filter-bar">
+          <select id="sort-select">
+            <option value="newest">최신순</option>
+            <option value="oldest">오래된순</option>
+            <option value="name">이름순</option>
+          </select>
+          <span id="chat-count" class="chat-count">0개 대화</span>
+        </div>
+        
+        <div class="filter-row">
+          <select id="category-filter">
+            <option value="">모든 카테고리</option>
+          </select>
+          <select id="tag-filter">
+            <option value="">모든 태그</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="chat-list" class="chat-list">
+        <!-- 대화 목록이 여기에 렌더링됨 -->
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <main id="main-content">
+      <!-- 초기 화면 -->
+      <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-content">
+          <div class="welcome-icon">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6H12L10 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6ZM20 18H4V6H9.17L11.17 8H20V18ZM12 10V14M10 12H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h1>Claude 대화 뷰어</h1>
+          <p>Claude에서 다운로드한 대화 내역을 열람하세요</p>
+          <div class="welcome-buttons">
+            <button id="load-zip-btn" class="primary-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              ZIP 파일 열기
+            </button>
+            <button id="load-folder-btn" class="secondary-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+              폴더 열기
+            </button>
+          </div>
+          <p class="hint">또는 좌측 상단 버튼으로 파일을 불러오세요</p>
+        </div>
+      </div>
+
+      <!-- 대화 내용 영역 -->
+      <div id="chat-view" class="chat-view" style="display: none;">
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <h2 id="chat-title">대화 제목</h2>
+            <div class="chat-meta">
+              <span id="chat-date"></span>
+              <span id="chat-message-count"></span>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <!-- 메시지 필터 -->
+            <div class="message-filter">
+              <button class="filter-btn active" data-filter="all" title="전체 메시지">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                전체
+              </button>
+              <button class="filter-btn" data-filter="human" title="내 메시지만">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+                나
+              </button>
+              <button class="filter-btn" data-filter="assistant" title="Claude 메시지만">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                Claude
+              </button>
+            </div>
+            <button id="edit-metadata-btn" class="metadata-btn" title="카테고리/태그 편집">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+              편집
+            </button>
+          </div>
+        </div>
+        
+        <!-- 카테고리/태그 표시 영역 -->
+        <div id="chat-metadata" class="chat-metadata">
+          <div id="current-category" class="current-category"></div>
+          <div id="current-tags" class="current-tags"></div>
+        </div>
+        
+        <div id="messages-container" class="messages-container">
+          <!-- 메시지들이 여기에 렌더링됨 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 카테고리/태그 관리 모달 -->
+  <div id="manage-modal" class="modal" style="display: none;">
+    <div class="modal-content manage-modal">
+      <div class="modal-header">
+        <h3>카테고리 & 태그 관리</h3>
+        <button class="modal-close" id="close-manage-modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="categories">카테고리</button>
+        <button class="tab-btn" data-tab="tags">태그</button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- 카테고리 탭 -->
+        <div id="categories-tab" class="tab-content active">
+          <div class="add-form">
+            <input type="text" id="new-category-name" placeholder="새 카테고리 이름" />
+            <input type="color" id="new-category-color" value="#6366f1" />
+            <button id="add-category-btn" class="add-btn">추가</button>
+          </div>
+          <div id="categories-list" class="items-list">
+            <!-- 카테고리 목록 -->
+          </div>
+        </div>
+        
+        <!-- 태그 탭 -->
+        <div id="tags-tab" class="tab-content">
+          <div class="add-form">
+            <input type="text" id="new-tag-name" placeholder="새 태그 이름" />
+            <input type="color" id="new-tag-color" value="#22c55e" />
+            <button id="add-tag-btn" class="add-btn">추가</button>
+          </div>
+          <div id="tags-list" class="items-list">
+            <!-- 태그 목록 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대화 메타데이터 편집 모달 -->
+  <div id="metadata-modal" class="modal" style="display: none;">
+    <div class="modal-content metadata-modal">
+      <div class="modal-header">
+        <h3>카테고리 & 태그 설정</h3>
+        <button class="modal-close" id="close-metadata-modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="metadata-section">
+          <label>카테고리</label>
+          <select id="select-category">
+            <option value="">카테고리 없음</option>
+          </select>
+        </div>
+        
+        <div class="metadata-section">
+          <label>태그</label>
+          <div id="tag-checkboxes" class="tag-checkboxes">
+            <!-- 태그 체크박스 -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button id="save-metadata-btn" class="primary-btn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 자동 분류 모달 -->
+  <div id="ai-modal" class="modal" style="display: none;">
+    <div class="modal-content ai-modal">
+      <div class="modal-header">
+        <h3>🤖 AI 자동 분류</h3>
+        <button class="modal-close" id="close-ai-modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- AI 설정 -->
+        <div class="ai-settings">
+          <div class="setting-row">
+            <label>Ollama 서버</label>
+            <input type="text" id="ollama-url" value="http://127.0.0.1:11434" placeholder="http://127.0.0.1:11434" />
+          </div>
+          <div class="setting-row">
+            <label>모델</label>
+            <div class="model-select-row">
+              <select id="ollama-model">
+                <option value="">모델을 선택하세요</option>
+              </select>
+              <button id="refresh-models-btn" class="icon-btn small" title="모델 목록 새로고침">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <button id="test-connection-btn" class="secondary-btn small">연결 테스트</button>
+          <div id="connection-status" class="connection-status"></div>
+        </div>
+        
+        <hr class="divider" />
+        
+        <!-- 처리 방식 선택 -->
+        <div class="process-section">
+          <h4>처리 방식</h4>
+          <div class="process-options">
+            <label class="radio-option">
+              <input type="radio" name="process-mode" value="single" checked />
+              <span class="radio-label">
+                <strong>단건 처리</strong>
+                <small>현재 선택된 대화만 분류</small>
+              </span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="process-mode" value="sequential" />
+              <span class="radio-label">
+                <strong>순차 처리</strong>
+                <small>모든 대화를 하나씩 순서대로 분류</small>
+              </span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="process-mode" value="batch" />
+              <span class="radio-label">
+                <strong>일괄 처리</strong>
+                <small>모든 대화를 동시에 분류 (빠름)</small>
+              </span>
+            </label>
+          </div>
+          
+          <div class="process-options-extra">
+            <label class="checkbox-option">
+              <input type="checkbox" id="skip-classified" checked />
+              <span>이미 분류된 대화 건너뛰기</span>
+            </label>
+            <label class="checkbox-option">
+              <input type="checkbox" id="auto-create-tags" checked />
+              <span>새 태그 자동 생성</span>
+            </label>
+          </div>
+        </div>
+        
+        <!-- 진행 상태 -->
+        <div id="ai-progress" class="ai-progress" style="display: none;">
+          <div class="progress-header">
+            <span id="progress-text">처리 중...</span>
+            <button id="cancel-process-btn" class="cancel-btn">취소</button>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <div id="progress-detail" class="progress-detail"></div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button id="start-ai-btn" class="primary-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          분류 시작
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 컨텍스트 메뉴 (오른쪽 클릭) -->
+  <div id="context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" data-action="rename">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      <span>제목 변경</span>
+    </div>
+    <div class="context-menu-item" data-action="category">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>카테고리 변경</span>
+      <svg class="submenu-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </div>
+    <div id="category-submenu" class="context-submenu">
+      <!-- 카테고리 목록이 여기에 동적으로 추가됨 -->
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item danger" data-action="delete">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        <line x1="10" y1="11" x2="10" y2="17"/>
+        <line x1="14" y1="11" x2="14" y2="17"/>
+      </svg>
+      <span>대화 삭제</span>
+    </div>
+  </div>
+
+  <!-- 로딩 오버레이 -->
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+    <p>대화 불러오는 중...</p>
+  </div>
+
+  <!-- 토스트 알림 -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

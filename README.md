@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>A desktop app for managing your Claude conversation history</strong>
+  <strong>Claude 대화 내역을 편리하게 관리하는 데스크톱 앱</strong>
 </p>
 
 <p align="center">
@@ -16,113 +16,113 @@
 
 ---
 
-## 📖 Introduction
+## 📖 소개
 
-Claude Chat Viewer is an Electron-based desktop application that lets you conveniently browse and manage conversation records exported from [Claude](https://claude.ai).
+Claude Chat Viewer는 [Claude](https://claude.ai)에서 내보낸 대화 기록을 편리하게 열람하고 관리할 수 있는 Electron 기반 데스크톱 애플리케이션입니다.
 
-Organize your conversations with categories and tags, and use local AI (Ollama) for automatic classification to easily manage hundreds of conversations.
+대화를 카테고리와 태그로 분류하고, 로컬 AI(Ollama)를 활용한 자동 분류 기능으로 수백 개의 대화도 손쉽게 정리할 수 있습니다.
 
-## ✨ Key Features
+## ✨ 주요 기능
 
-### 📁 Multiple File Format Support
-- ZIP files (Claude's default export format)
-- JSON files
-- Folders (batch load multiple JSON files)
+### 📁 다양한 파일 형식 지원
+- ZIP 파일 (Claude 내보내기 기본 형식)
+- JSON 파일
+- 폴더 (여러 JSON 파일 일괄 로드)
 
-### 🏷️ Category & Tag Management
-- Assign a category to each conversation (single)
-- Assign tags to each conversation (multiple)
-- Custom color settings
-- Filter by category/tag
+### 🏷️ 카테고리 & 태그 관리
+- 대화별 카테고리 지정 (단일)
+- 대화별 태그 지정 (복수)
+- 커스텀 색상 설정
+- 카테고리/태그별 필터링
 
-### 🤖 AI Auto-Classification (Ollama Integration)
-- Automatic conversation classification using local AI
-- Single / Sequential / Batch processing modes
-- Auto-select from existing categories, auto-create new tags
+### 🤖 AI 자동 분류 (Ollama 연동)
+- 로컬 AI를 활용한 대화 자동 분류
+- 단건 / 순차 / 일괄 처리 모드 지원
+- 기존 카테고리에서 자동 선택, 새 태그 자동 생성
 
-### 🔍 Search & Filter
-- Full-text search (title + content)
-- Search term highlighting
-- Sort: Newest / Oldest / Name
-- Message filter: All / My messages / Claude messages
+### 🔍 검색 & 필터
+- 전체 텍스트 검색 (제목 + 내용)
+- 검색어 하이라이트
+- 정렬: 최신순 / 오래된순 / 이름순
+- 메시지 필터: 전체 / 내 메시지 / Claude 메시지
 
-### 💬 Messenger-Style UI
-- Human messages → Right side (purple bubble)
-- Claude messages → Left side (gray bubble)
-- Dark theme by default
+### 💬 메신저 스타일 UI
+- Human 메시지 → 오른쪽 (보라색 말풍선)
+- Claude 메시지 → 왼쪽 (회색 말풍선)
+- 다크 테마 기본 적용
 
-### 🖥️ Convenience Features
-- Custom title bar
-- Auto-load last opened file
-- Right-click context menu (rename, change category, delete)
-- Keyboard shortcuts (Ctrl+O, Ctrl+F, Escape)
+### 🖥️ 편의 기능
+- 커스텀 타이틀바
+- 마지막 열었던 파일 자동 로드
+- 오른쪽 클릭 컨텍스트 메뉴 (제목 변경, 카테고리 변경, 삭제)
+- 키보드 단축키 지원 (Ctrl+O, Ctrl+F, Escape)
 
-## 📸 Screenshots
+## 📸 스크린샷
 
-<!-- Add screenshot images here -->
-<!-- ![Main Screen](screenshots/main.png) -->
-<!-- ![AI Auto-Classification](screenshots/ai-classify.png) -->
+<!-- 스크린샷 이미지를 추가하세요 -->
+<!-- ![메인 화면](screenshots/main.png) -->
+<!-- ![AI 자동 분류](screenshots/ai-classify.png) -->
 
-## 🚀 Installation
+## 🚀 설치 방법
 
-### Option 1: Download Release
-Download the latest installer from the [Releases](../../releases) page.
+### 방법 1: 릴리즈 다운로드
+[Releases](../../releases) 페이지에서 최신 버전의 설치 파일을 다운로드하세요.
 
-### Option 2: Build from Source
+### 방법 2: 소스에서 빌드
 
 ```bash
-# Clone the repository
+# 저장소 클론
 git clone https://github.com/yourusername/claude-chat-viewer.git
 cd claude-chat-viewer
 
-# Install dependencies
+# 의존성 설치
 npm install
 
-# Run in development mode
+# 개발 모드 실행
 npm start
 
-# Build (Windows)
+# 빌드 (Windows)
 npm run build
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ 기술 스택
 
-- **Electron** - Cross-platform desktop app framework
-- **sql.js** - WebAssembly-based SQLite (stores category/tag data)
-- **node-fetch** - Ollama API communication
-- **adm-zip** - ZIP file processing
+- **Electron** - 크로스 플랫폼 데스크톱 앱 프레임워크
+- **sql.js** - WebAssembly 기반 SQLite (카테고리/태그 데이터 저장)
+- **node-fetch** - Ollama API 통신
+- **adm-zip** - ZIP 파일 처리
 
-## 📋 How to Use
+## 📋 사용 방법
 
-### Basic Usage
+### 기본 사용법
 
-1. Export conversations from Claude.ai (Settings → Export Data)
-2. Launch the app and open a ZIP file or folder
-3. Click on a conversation in the list to view
+1. Claude.ai에서 대화 내보내기 (Settings → Export Data)
+2. 앱 실행 후 ZIP 파일 또는 폴더 열기
+3. 대화 목록에서 원하는 대화 클릭
 
-### AI Auto-Classification
+### AI 자동 분류 사용법
 
-1. Install and run [Ollama](https://ollama.ai)
-2. Download a model: `ollama pull gemma2` or `ollama pull llama3.2`
-3. Click the 🤖 button in the app
-4. Test connection → Select model → Start classification
+1. [Ollama](https://ollama.ai) 설치 및 실행
+2. 모델 다운로드: `ollama pull gemma2` 또는 `ollama pull llama3.2`
+3. 앱에서 🤖 버튼 클릭
+4. 연결 테스트 → 모델 선택 → 분류 시작
 
-### Data Storage Location
+### 데이터 저장 위치
 
-Category/tag data is stored in SQLite format at `C:\Database\claude-chat-viewer.db`.
+카테고리/태그 데이터는 `C:\Database\claude-chat-viewer.db`에 SQLite 형식으로 저장됩니다.
 
-## ⌨️ Keyboard Shortcuts
+## ⌨️ 키보드 단축키
 
-| Shortcut | Function |
-|----------|----------|
-| `Ctrl + O` | Open file |
-| `Ctrl + F` | Focus search box |
-| `Escape` | Close modal / Clear search |
-| `F12` | Open developer tools |
+| 단축키 | 기능 |
+|--------|------|
+| `Ctrl + O` | 파일 열기 |
+| `Ctrl + F` | 검색창 포커스 |
+| `Escape` | 모달 닫기 / 검색 초기화 |
+| `F12` | 개발자 도구 열기 |
 
-## 🤝 Contributing
+## 🤝 기여하기
 
-Bug reports, feature suggestions, and PRs are all welcome!
+버그 리포트, 기능 제안, PR 모두 환영합니다!
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -130,19 +130,18 @@ Bug reports, feature suggestions, and PRs are all welcome!
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## 📄 라이선스
 
-MIT License - Free to use, modify, and distribute.
+MIT License - 자유롭게 사용, 수정, 배포할 수 있습니다.
 
-## 🙏 Acknowledgments
+## 🙏 감사의 말
 
 - [Anthropic](https://anthropic.com) - Claude AI
-- [Ollama](https://ollama.ai) - Local AI runtime environment
-- [Electron](https://electronjs.org) - Desktop app framework
+- [Ollama](https://ollama.ai) - 로컬 AI 실행 환경
+- [Electron](https://electronjs.org) - 데스크톱 앱 프레임워크
 
 ---
 
 <p align="center">
   Made with ❤️ for Claude users
-</p># ClaudeChatViewer
-A desktop app for managing your Claude conversation history
+</p>
